@@ -35,6 +35,9 @@ pub struct PingTestApp {
 
     // Theme applied
     theme_applied: bool,
+
+    // Track if input was cleaned (avoid re-cleaning on every frame)
+    last_cleaned_input: String,
 }
 
 impl PingTestApp {
@@ -60,7 +63,7 @@ impl PingTestApp {
             sorted_indices: Vec::new(),
             table_state: table::TableState::default(),
             dialog_state: dialogs::DialogState::default(),
-            address_input,
+            address_input: address_input.clone(),
             is_running: false,
             imported_file_path: None,
             imported_excel_data: None,
@@ -68,6 +71,7 @@ impl PingTestApp {
             status_msg: "就绪".to_string(),
             runtime: None,
             theme_applied: false,
+            last_cleaned_input: address_input,
         }
     }
 
@@ -84,7 +88,31 @@ impl PingTestApp {
         self.runtime.as_ref().unwrap()
     }
 
+    /// Auto-clean input: extract IPs from messy text
+    fn clean_input_if_needed(&mut self) {
+        if self.address_input == self.last_cleaned_input {
+            return;
+        }
+        // Check if input contains non-IP characters (Chinese, random text, etc.)
+        let has_noise = self.address_input.chars().any(|c| {
+            !c.is_ascii_alphanumeric() && !matches!(c, '.' | '/' | ':' | '-' | '_' | '\n' | '\r' | ' ' | '\t' | ',' | ';')
+        });
+        if has_noise {
+            let cleaned = utils::extract_and_clean_ips(&self.address_input);
+            if !cleaned.is_empty() {
+                self.address_input = cleaned.clone();
+                self.last_cleaned_input = cleaned;
+                self.status_msg = "已自动提取IP地址".to_string();
+                return;
+            }
+        }
+        self.last_cleaned_input = self.address_input.clone();
+    }
+
     fn start_ping(&mut self) {
+        // Auto-clean before parsing
+        self.clean_input_if_needed();
+
         if self.address_input.trim().is_empty() {
             self.status_msg = "请输入IP地址".to_string();
             return;
@@ -148,6 +176,15 @@ impl PingTestApp {
         self.status_msg = "已停止".to_string();
     }
 
+    /// Refresh: stop current ping, re-parse input, restart
+    fn refresh_ping(&mut self) {
+        self.stop_ping();
+        // Reset stats
+        self.targets.clear();
+        self.sorted_indices.clear();
+        self.start_ping();
+    }
+
     fn handle_file_drop(&mut self, path: PathBuf) {
         let ext = path.extension()
             .and_then(|e| e.to_str())
@@ -162,11 +199,13 @@ impl PingTestApp {
         match ext.as_str() {
             "txt" | "csv" => {
                 if let Ok(content) = std::fs::read_to_string(&path) {
-                    self.address_input = content;
+                    // Auto-extract IPs from file content
+                    let cleaned = utils::extract_and_clean_ips(&content);
+                    self.address_input = if cleaned.is_empty() { content } else { cleaned };
+                    self.last_cleaned_input = self.address_input.clone();
                     self.status_msg = format!("已导入: {}", path.display());
                     if self.is_running {
-                        self.stop_ping();
-                        self.start_ping();
+                        self.refresh_ping();
                     }
                 }
             }
@@ -183,8 +222,7 @@ impl PingTestApp {
                             self.imported_excel_data = Some((headers, rows));
                             self.selected_ip_col = Some(col_idx);
                             if self.is_running {
-                                self.stop_ping();
-                                self.start_ping();
+                                self.refresh_ping();
                             }
                         } else {
                             self.dialog_state.excel_columns = ip_cols;
@@ -215,6 +253,7 @@ impl PingTestApp {
             }
         }
         self.address_input = ips.join("\n");
+        self.last_cleaned_input = self.address_input.clone();
         self.status_msg = format!("已从Excel导入 {} 个地址", ips.len());
     }
 
@@ -234,7 +273,7 @@ impl PingTestApp {
         }
     }
 
-    fn export_results(&self) {
+    fn export_results(&mut self) {
         let initial_dir = self.config.last_import_dir.clone();
         let mut dialog = rfd::FileDialog::new()
             .add_filter("Excel文件", &["xlsx"])
@@ -246,15 +285,15 @@ impl PingTestApp {
 
         if let Some(path) = dialog.save_file() {
             match excel::export_results(&path, &self.targets, &self.config.export) {
-                Ok(_) => {}
-                Err(e) => tracing::error!("导出失败: {}", e),
+                Ok(_) => self.status_msg = format!("已导出: {}", path.display()),
+                Err(e) => self.status_msg = format!("导出失败: {}", e),
             }
         }
     }
 
-    fn export_to_source_excel(&self) {
+    fn export_to_source_excel(&mut self) {
         if let (Some(source_path), Some(_), Some(ip_col)) = (
-            &self.imported_file_path,
+            &self.imported_file_path.clone(),
             &self.imported_excel_data,
             self.selected_ip_col,
         ) {
@@ -280,8 +319,8 @@ impl PingTestApp {
                     ip_col,
                     &self.config.export,
                 ) {
-                    Ok(_) => {}
-                    Err(e) => tracing::error!("插入结果失败: {}", e),
+                    Ok(_) => self.status_msg = format!("已插入结果: {}", path.display()),
+                    Err(e) => self.status_msg = format!("插入失败: {}", e),
                 }
             }
         }
@@ -315,8 +354,7 @@ impl eframe::App for PingTestApp {
             }
             self.dialog_state.excel_column_confirmed = false;
             if self.is_running {
-                self.stop_ping();
-                self.start_ping();
+                self.refresh_ping();
             }
         }
 
@@ -346,9 +384,8 @@ impl eframe::App for PingTestApp {
                     if ui.button(RichText::new("⏹ 停止").color(theme::FAIL_COLOR)).clicked() {
                         self.stop_ping();
                     }
-                    if ui.button(RichText::new("🔄 重启").color(theme::WARN_COLOR)).clicked() {
-                        self.stop_ping();
-                        self.start_ping();
+                    if ui.button(RichText::new("🔄 刷新").color(theme::WARN_COLOR)).clicked() {
+                        self.refresh_ping();
                     }
                 } else if ui.button(RichText::new("▶ 开始").color(theme::SUCCESS_COLOR)).clicked() {
                     self.start_ping();
@@ -387,7 +424,9 @@ impl eframe::App for PingTestApp {
             ui.horizontal(|ui| {
                 ui.label(RichText::new(&self.status_msg).color(theme::TEXT_DIM).size(11.0));
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                    ui.label(RichText::new("© 2026 byff").color(theme::TEXT_DIM).size(10.0));
                     if !self.targets.is_empty() {
+                        ui.separator();
                         let total = self.targets.len();
                         let alive = self.targets.iter()
                             .filter(|t| t.stats.read().is_alive)
@@ -396,7 +435,6 @@ impl eframe::App for PingTestApp {
                             "在线: {}/{}", alive, total
                         )).color(if alive == total { theme::SUCCESS_COLOR } else { theme::WARN_COLOR }).size(11.0));
                     }
-                    ui.label(RichText::new("© 2026 byff").color(theme::TEXT_DIM).size(10.0));
                 });
             });
         });
@@ -407,8 +445,22 @@ impl eframe::App for PingTestApp {
             .min_width(160.0)
             .resizable(true)
             .show(ctx, |ui| {
-                ui.label(RichText::new("目标地址").strong().color(theme::ACCENT));
-                ui.label(RichText::new("每行一个IP/域名/CIDR").color(theme::TEXT_DIM).size(10.0));
+                ui.horizontal(|ui| {
+                    ui.label(RichText::new("目标地址").strong().color(theme::ACCENT));
+                    ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                        if ui.small_button("🧹 整理").on_hover_text("自动提取并格式化IP地址").clicked() {
+                            let cleaned = utils::extract_and_clean_ips(&self.address_input);
+                            if !cleaned.is_empty() {
+                                self.address_input = cleaned.clone();
+                                self.last_cleaned_input = cleaned;
+                                self.status_msg = "已整理IP地址".to_string();
+                            } else {
+                                self.status_msg = "未找到有效IP地址".to_string();
+                            }
+                        }
+                    });
+                });
+                ui.label(RichText::new("支持混合文本，自动提取IP").color(theme::TEXT_DIM).size(10.0));
                 ui.add_space(4.0);
 
                 let available = ui.available_size();
@@ -420,7 +472,7 @@ impl eframe::App for PingTestApp {
                                 .desired_width(f32::INFINITY)
                                 .desired_rows(20)
                                 .font(egui::TextStyle::Monospace)
-                                .hint_text("192.168.1.1\n10.0.0.0/24\nexample.com")
+                                .hint_text("192.168.1.1\n10.0.0.0/24\nexample.com\n或粘贴含IP的任意文本")
                         );
                     });
             });
@@ -429,7 +481,7 @@ impl eframe::App for PingTestApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             if self.targets.is_empty() {
                 ui.centered_and_justified(|ui| {
-                    ui.label(RichText::new("输入IP地址并点击 ▶ 开始")
+                    ui.label(RichText::new("输入IP地址并点击 ▶ 开始\n支持直接粘贴含IP的文本，自动提取")
                         .color(theme::TEXT_DIM)
                         .size(16.0));
                 });

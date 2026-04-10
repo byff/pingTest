@@ -16,6 +16,12 @@ pub struct DialogState {
 }
 
 pub fn render_settings_dialog(ctx: &Context, config: &mut AppConfig, open: &mut bool) {
+    if !*open {
+        return;
+    }
+
+    let mut should_close = false;
+
     Window::new("⚙ 设置")
         .open(open)
         .resizable(true)
@@ -86,13 +92,28 @@ pub fn render_settings_dialog(ctx: &Context, config: &mut AppConfig, open: &mut 
                 cols[1].checkbox(&mut config.debug_mode, "调试模式（需重启）");
             });
 
-            ui.add_space(8.0);
+            ui.add_space(12.0);
+            ui.separator();
+            ui.add_space(4.0);
+
             ui.horizontal(|ui| {
                 if ui.button(RichText::new("💾 保存").color(theme::ACCENT)).clicked() {
                     config.save();
                 }
+                if ui.button("关闭").clicked() {
+                    should_close = true;
+                }
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    if ui.small_button(RichText::new("恢复默认").color(theme::TEXT_DIM)).clicked() {
+                        *config = AppConfig::default();
+                    }
+                });
             });
         });
+
+    if should_close {
+        *open = false;
+    }
 }
 
 pub fn render_ip_warning_dialog(ctx: &Context, state: &mut DialogState) {
@@ -167,7 +188,7 @@ pub fn render_about_dialog(ctx: &Context, open: &mut bool) {
         .show(ctx, |ui| {
             ui.vertical_centered(|ui| {
                 ui.label(RichText::new("PingTest").size(24.0).color(theme::ACCENT).strong());
-                ui.label(RichText::new("v0.2.0").color(theme::TEXT_DIM));
+                ui.label(RichText::new("v0.2.1").color(theme::TEXT_DIM));
                 ui.add_space(8.0);
                 ui.label("高性能多目标 Ping 工具");
                 ui.add_space(4.0);

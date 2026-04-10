@@ -2242,7 +2242,7 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 
 [[package]]
 name = "pingtest"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "calamine",
  "chrono",
@@ -2252,6 +2252,7 @@ dependencies = [
  "egui_extras",
  "ipnetwork",
  "parking_lot",
+ "regex",
  "rfd",
  "rust_xlsxwriter",
  "serde",

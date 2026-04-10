@@ -1,5 +1,6 @@
 use std::net::IpAddr;
 use ipnetwork::IpNetwork;
+use regex::Regex;
 
 fn network_ip_count(network: &IpNetwork) -> u128 {
     match network {
@@ -12,6 +13,47 @@ fn network_ip_count(network: &IpNetwork) -> u128 {
             if prefix >= 128 { 1 } else { 1u128 << (128 - prefix) }
         }
     }
+}
+
+/// Extract and clean IP addresses from messy text containing Chinese, mixed characters, etc.
+/// Returns cleaned text with one IP/CIDR/domain per line.
+pub fn extract_and_clean_ips(input: &str) -> String {
+    // Match IPv4, IPv4/CIDR, or domain-like patterns
+    let ip_re = Regex::new(
+        r"(?x)
+        (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:/\d{1,2})?)  # IPv4 or IPv4/CIDR
+        |
+        ([a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,})+)  # domain
+        "
+    ).unwrap();
+
+    let mut results = Vec::new();
+    let mut seen = std::collections::HashSet::new();
+
+    for cap in ip_re.captures_iter(input) {
+        let matched = cap.get(0).unwrap().as_str().to_string();
+
+        // Validate: if it looks like an IP, check octets
+        if let Some(ip_part) = cap.get(1) {
+            let ip_str = ip_part.as_str();
+            let base_ip = ip_str.split('/').next().unwrap_or(ip_str);
+            let octets: Vec<&str> = base_ip.split('.').collect();
+            if octets.len() == 4 {
+                let valid = octets.iter().all(|o| {
+                    o.parse::<u16>().map(|v| v <= 255).unwrap_or(false)
+                });
+                if !valid {
+                    continue;
+                }
+            }
+        }
+
+        if seen.insert(matched.clone()) {
+            results.push(matched);
+        }
+    }
+
+    results.join("\n")
 }
 
 /// Parse input text into a list of IP addresses.
@@ -34,7 +76,6 @@ pub fn parse_targets(input: &str, strip_first_last: bool) -> Vec<(String, IpAddr
             let ips: Vec<IpAddr> = network.iter().collect();
             let len = ips.len();
             if strip_first_last && len > 2 {
-                // Skip network address (first) and broadcast address (last)
                 for ip in &ips[1..len-1] {
                     results.push((ip.to_string(), *ip));
                 }

@@ -1,4 +1,4 @@
-// Windows: hide console window
+// Windows: hide console window in release builds
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod config;
@@ -29,8 +29,7 @@ fn main() -> eframe::Result<()> {
 
 fn load_icon() -> egui::IconData {
     let png_data = include_bytes!("../assets/rping.png");
-    let image = eframe::icon_data::from_png_bytes(png_data);
-    match image {
+    match eframe::icon_data::from_png_bytes(png_data) {
         Ok(icon) => icon,
         Err(_) => egui::IconData::default(),
     }
