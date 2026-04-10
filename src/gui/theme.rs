@@ -1,6 +1,22 @@
-use egui::{Color32, Visuals, Style, Rounding, Stroke};
+use egui::{Color32, Visuals, Style, Rounding, Stroke, FontDefinitions, FontData, FontFamily};
 
 pub fn apply_theme(ctx: &egui::Context) {
+    // Load Chinese font
+    let mut fonts = FontDefinitions::default();
+    fonts.font_data.insert(
+        "noto_sans_sc".to_owned(),
+        FontData::from_static(include_bytes!("../../assets/NotoSansCJKsc-Regular.otf")).into(),
+    );
+
+    fonts.families.entry(FontFamily::Proportional)
+        .or_default()
+        .insert(0, "noto_sans_sc".to_owned());
+    fonts.families.entry(FontFamily::Monospace)
+        .or_default()
+        .push("noto_sans_sc".to_owned());
+
+    ctx.set_fonts(fonts);
+
     let mut visuals = Visuals::dark();
 
     // Modern dark tech theme
