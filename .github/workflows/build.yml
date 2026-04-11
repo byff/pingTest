@@ -109,7 +109,7 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
     steps:
@@ -124,3 +124,5 @@ jobs:
         with:
           files: dist/*
           generate_release_notes: true
+          prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          name: "PingTest ${{ github.ref == 'refs/heads/main' && 'dev' || github.ref }}"

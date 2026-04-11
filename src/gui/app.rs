@@ -38,6 +38,9 @@ pub struct PingTestApp {
 
     // Track if input was cleaned (avoid re-cleaning on every frame)
     last_cleaned_input: String,
+
+    // Focus input on first frame
+    input_focus_requested: bool,
 }
 
 impl PingTestApp {
@@ -72,6 +75,7 @@ impl PingTestApp {
             runtime: None,
             theme_applied: false,
             last_cleaned_input: address_input,
+            input_focus_requested: false,
         }
     }
 
@@ -339,6 +343,14 @@ impl eframe::App for PingTestApp {
             self.theme_applied = true;
         }
 
+        // Request focus on input TextEdit on first frame
+        if !self.input_focus_requested {
+            self.input_focus_requested = true;
+            ctx.memory_mut(|m| {
+                m.request_focus(egui::Id::new("ip_input_textedit"));
+            });
+        }
+
         // Handle file drops
         ctx.input(|i| {
             if !i.raw.dropped_files.is_empty() {
@@ -473,16 +485,18 @@ impl eframe::App for PingTestApp {
                 ui.label(RichText::new("支持混合文本，自动提取IP").color(theme::TEXT_DIM).size(10.0));
                 ui.add_space(4.0);
 
+                let panel_available = ui.available_size();
+                let header_taken = 40.0; // label + spacing above scroll
                 egui::ScrollArea::vertical()
                     .id_salt("ip_input_scroll")
                     .show(ui, |ui| {
-                        let available = ui.available_size();
-                        ui.set_min_height(available.y.max(200.0));
+                        ui.set_max_height((panel_available.y - header_taken).max(200.0));
                         ui.add(
                             egui::TextEdit::multiline(&mut self.address_input)
                                 .desired_width(f32::INFINITY)
                                 .font(egui::TextStyle::Monospace)
                                 .hint_text("192.168.1.1\n10.0.0.0/24\nexample.com\n或粘贴含IP的任意文本")
+                                .id(egui::Id::new("ip_input_textedit"))
                         );
                     });
             });
