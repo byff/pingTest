@@ -3,6 +3,8 @@ use std::sync::Arc;
 use parking_lot::RwLock;
 use eframe::egui;
 use egui::{RichText, Layout, Align};
+use egui::text_selection::CursorRange;
+use egui::epaint::text::cursor::Cursor;
 
 use crate::config::AppConfig;
 use crate::ping::{PingEngine, PingTarget, PingStats};
@@ -41,6 +43,9 @@ pub struct PingTestApp {
 
     // Focus input on first frame
     input_focus_requested: bool,
+
+    // Countdown to apply select-all after focus is granted
+    select_all_countdown: u8,
 }
 
 impl PingTestApp {
@@ -76,6 +81,7 @@ impl PingTestApp {
             theme_applied: false,
             last_cleaned_input: address_input,
             input_focus_requested: false,
+            select_all_countdown: 2,
         }
     }
 
@@ -349,12 +355,27 @@ impl eframe::App for PingTestApp {
             self.theme_applied = true;
         }
 
-        // Request focus on input TextEdit on first frame
+        // Request focus on first frame
         if !self.input_focus_requested {
             self.input_focus_requested = true;
+            self.select_all_countdown = 2;
             ctx.memory_mut(|m| {
                 m.request_focus(egui::Id::new("ip_input_textedit"));
             });
+        }
+
+        // Apply select-all for a few frames after focus is requested
+        if self.select_all_countdown > 0 {
+            let id = egui::Id::new("ip_input_textedit");
+            let n = self.address_input.len();
+            if n > 0 {
+                if let Some(mut state) = egui::widgets::text_edit::TextEditState::load(ctx, id) {
+                    let end = Cursor { ccursor: egui::text::CCursor::new(n), ..Default::default() };
+                    state.cursor.set_range(Some(CursorRange::two(Cursor::default(), end)));
+                    state.store(ctx, id);
+                }
+            }
+            self.select_all_countdown -= 1;
         }
 
         // Handle file drops
@@ -501,6 +522,7 @@ impl eframe::App for PingTestApp {
                             .font(egui::TextStyle::Monospace)
                             .hint_text("192.168.1.1\n10.0.0.0/24\nexample.com\n或粘贴含IP的任意文本")
                             .id(egui::Id::new("ip_input_textedit"))
+                            .frame(true)
                     );
                 });
             });
