@@ -105,23 +105,23 @@ impl PingTestApp {
             return;
         }
 
-        let count = utils::count_cidr_ips(&self.address_input);
+        // Auto-extract valid IPs before pinging (text box stays unchanged)
+        let cleaned_input = utils::extract_and_clean_ips(&self.address_input);
+        if cleaned_input.is_empty() {
+            self.status_msg = "未找到有效IP地址".to_string();
+            return;
+        }
+
+        let count = utils::count_cidr_ips(&cleaned_input);
         if count > 1000 && !self.dialog_state.ip_warning_confirmed {
             self.dialog_state.ip_count_warning = count;
             self.dialog_state.show_ip_warning = true;
             return;
         }
 
-        let (parsed, skipped) = utils::parse_targets(&self.address_input, self.config.cidr_strip_first_last);
+        let (parsed, _skipped) = utils::parse_targets(&cleaned_input, self.config.cidr_strip_first_last);
         if parsed.is_empty() {
-            if skipped > 0 {
-                self.dialog_state.show_error("解析失败", &format!(
-                    "未解析到有效IP地址，跳过了 {} 行无效内容。\n\n请检查输入格式，每行一个IP/域名/CIDR。",
-                    skipped
-                ));
-            } else {
-                self.status_msg = "未解析到有效IP地址".to_string();
-            }
+            self.status_msg = "未解析到有效IP地址".to_string();
             return;
         }
 
@@ -161,11 +161,7 @@ impl PingTestApp {
         *self.engine.write() = engine;
 
         self.is_running = true;
-        if skipped > 0 {
-            self.status_msg = format!("正在 Ping {} 个目标（跳过 {} 行无效内容）", self.targets.len(), skipped);
-        } else {
-            self.status_msg = format!("正在 Ping {} 个目标...", self.targets.len());
-        }
+        self.status_msg = format!("正在 Ping {} 个目标...", self.targets.len());
     }
 
     fn stop_ping(&mut self) {
