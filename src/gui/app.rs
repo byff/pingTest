@@ -466,9 +466,9 @@ impl eframe::App for PingTestApp {
             .show(ctx, |ui| {
                 ui.set_min_height(32.0);
                 ui.horizontal(|ui| {
-                    ui.label(RichText::new(&self.status_msg).color(theme::TEXT_DIM).size(12.0));
+                    ui.label(RichText::new(&self.status_msg).color(theme::TEXT_DIM).size(15.0));
                     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                        ui.label(RichText::new("© 2026 byff").color(theme::TEXT_DIM).size(10.0));
+                        ui.label(RichText::new("© 2026 白云纷飞").color(theme::TEXT_DIM).size(12.0));
                         if !self.targets.is_empty() {
                             ui.separator();
                             let total = self.targets.len();
@@ -477,7 +477,7 @@ impl eframe::App for PingTestApp {
                                 .count();
                             ui.label(RichText::new(format!(
                                 "在线: {}/{}", alive, total
-                            )).color(if alive == total { theme::SUCCESS_COLOR } else { theme::WARN_COLOR }).size(12.0));
+                            )).color(if alive == total { theme::SUCCESS_COLOR } else { theme::WARN_COLOR }).size(15.0));
                         }
                     });
                 });
