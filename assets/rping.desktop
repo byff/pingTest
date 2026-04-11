@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=PingTest
+Name=批量ping工具
 Comment=高性能多目标Ping工具
 Exec=/usr/bin/pingTest
 Icon=/usr/share/icons/hicolor/256x256/apps/rping.png
