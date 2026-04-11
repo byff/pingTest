@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use parking_lot::RwLock;
 use eframe::egui;
-use egui::{RichText, Layout, Align};
+use egui::{RichText, Layout, Align, Key, Modifiers};
 
 use crate::config::AppConfig;
 use crate::ping::{PingEngine, PingTarget, PingStats};
@@ -44,9 +44,6 @@ pub struct PingTestApp {
 
     // Countdown to apply select-all after focus is granted
     select_all_countdown: u8,
-
-    // Timestamp (secs) of last click on input TextEdit, for double-click detection
-    last_input_click_secs: Option<f64>,
 }
 
 impl PingTestApp {
@@ -83,7 +80,6 @@ impl PingTestApp {
             last_cleaned_input: address_input,
             input_focus_requested: false,
             select_all_countdown: 2,
-            last_input_click_secs: None,
         }
     }
 
@@ -366,18 +362,18 @@ impl eframe::App for PingTestApp {
             });
         }
 
-        // Apply select-all on startup or when user clicks the input
+        // Inject Ctrl+A on frames when select-all is requested.
+        // TextEdit consumes events from ctx.input().events, so push before it renders.
         if self.select_all_countdown > 0 {
-            let id = egui::Id::new("ip_input_textedit");
             let n = self.address_input.len();
             if n > 0 {
-                if let Some(mut state) = egui::widgets::text_edit::TextEditState::load(ctx, id) {
-                    use egui::text::CCursorRange;
-                    let start = egui::text::CCursor::new(0);
-                    let end = egui::text::CCursor::new(n);
-                    state.cursor.set_char_range(Some(CCursorRange::two(start, end)));
-                    state.store(ctx, id);
-                }
+                ctx.input_mut(|i| i.events.push(egui::Event::Key {
+                    key: Key::A,
+                    physical_key: Some(Key::A),
+                    pressed: true,
+                    repeat: false,
+                    modifiers: Modifiers::CTRL,
+                }));
             }
             self.select_all_countdown -= 1;
         }
@@ -528,15 +524,9 @@ impl eframe::App for PingTestApp {
                             .id(egui::Id::new("ip_input_textedit"))
                             .frame(true)
                     );
-                    // Double-click TextEdit → select all (regardless of cursor position)
-                    if response.clicked() {
-                        let now = ctx.input(|i| i.time);
-                        let is_double = self.last_input_click_secs
-                            .map_or(false, |t| now - t < 0.3);
-                        self.last_input_click_secs = Some(now);
-                        if is_double && !self.address_input.is_empty() {
-                            self.select_all_countdown = 2;
-                        }
+                    // Double-click TextEdit → select all
+                    if response.double_clicked() && !self.address_input.is_empty() {
+                        self.select_all_countdown = 2;
                     }
                 });
             });
