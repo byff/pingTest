@@ -220,7 +220,7 @@ pub fn render_about_dialog(ctx: &Context, open: &mut bool) {
         .show(ctx, |ui| {
             ui.vertical_centered(|ui| {
                 ui.label(RichText::new("PingTest").size(24.0).color(theme::ACCENT).strong());
-                ui.label(RichText::new("v0.2.1").color(theme::TEXT_DIM));
+                ui.label(RichText::new("v0.3.0").color(theme::TEXT_DIM));
                 ui.add_space(8.0);
                 ui.label("高性能多目标 Ping 工具");
                 ui.add_space(4.0);

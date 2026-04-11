@@ -485,20 +485,18 @@ impl eframe::App for PingTestApp {
                 ui.label(RichText::new("支持混合文本，自动提取IP").color(theme::TEXT_DIM).size(10.0));
                 ui.add_space(4.0);
 
-                let panel_available = ui.available_size();
-                let header_taken = 40.0; // label + spacing above scroll
-                egui::ScrollArea::vertical()
-                    .id_salt("ip_input_scroll")
-                    .show(ui, |ui| {
-                        ui.set_max_height((panel_available.y - header_taken).max(200.0));
-                        ui.add(
-                            egui::TextEdit::multiline(&mut self.address_input)
-                                .desired_width(f32::INFINITY)
-                                .font(egui::TextStyle::Monospace)
-                                .hint_text("192.168.1.1\n10.0.0.0/24\nexample.com\n或粘贴含IP的任意文本")
-                                .id(egui::Id::new("ip_input_textedit"))
-                        );
-                    });
+                // Fill entire remaining panel height with the TextEdit
+                let available = ui.available_size();
+                let text_height = (available.y - 12.0).max(100.0);
+                let _ = ui.allocate_ui(egui::vec2(available.x, text_height), |ui| {
+                    ui.add(
+                        egui::TextEdit::multiline(&mut self.address_input)
+                            .desired_width(f32::INFINITY)
+                            .font(egui::TextStyle::Monospace)
+                            .hint_text("192.168.1.1\n10.0.0.0/24\nexample.com\n或粘贴含IP的任意文本")
+                            .id(egui::Id::new("ip_input_textedit"))
+                    );
+                });
             });
 
         // Central panel - results table

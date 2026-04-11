@@ -1,6 +1,6 @@
 [package]
 name = "pingtest"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 description = "High-performance multi-target ping tool | Powered by byff"
 authors = ["byff"]
