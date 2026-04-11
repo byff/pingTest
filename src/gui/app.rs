@@ -364,7 +364,7 @@ impl eframe::App for PingTestApp {
             });
         }
 
-        // Apply select-all for a few frames after focus is requested
+        // Apply select-all on startup or when user clicks the input
         if self.select_all_countdown > 0 {
             let id = egui::Id::new("ip_input_textedit");
             let n = self.address_input.len();
@@ -516,7 +516,7 @@ impl eframe::App for PingTestApp {
                 let available = ui.available_size();
                 let text_height = (available.y - 12.0).max(100.0);
                 let _ = ui.allocate_ui(egui::vec2(available.x, text_height), |ui| {
-                    ui.add(
+                    let response = ui.add(
                         egui::TextEdit::multiline(&mut self.address_input)
                             .desired_width(f32::INFINITY)
                             .font(egui::TextStyle::Monospace)
@@ -524,6 +524,10 @@ impl eframe::App for PingTestApp {
                             .id(egui::Id::new("ip_input_textedit"))
                             .frame(true)
                     );
+                    // Clicking the text edit: select all if there's content
+                    if response.has_focus() && !self.address_input.is_empty() {
+                        self.select_all_countdown = 2;
+                    }
                 });
             });
 
