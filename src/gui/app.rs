@@ -468,7 +468,7 @@ impl eframe::App for PingTestApp {
                 ui.horizontal(|ui| {
                     ui.label(RichText::new(&self.status_msg).color(theme::TEXT_DIM).size(15.0));
                     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                        ui.label(RichText::new("© 2026 白云纷飞").color(theme::TEXT_DIM).size(12.0));
+                        ui.label(RichText::new("powered by 白云纷飞").color(theme::TEXT_DIM).size(12.0));
                         if !self.targets.is_empty() {
                             ui.separator();
                             let total = self.targets.len();
