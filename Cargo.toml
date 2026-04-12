@@ -52,10 +52,8 @@ parking_lot = "0.12"
 # IP extraction from messy text
 regex = "1"
 
-# Rendering - enable BOTH glow and wgpu so eframe can pick whichever works
-# glow = OpenGL 2.0+ (desktop with GPU)
-# wgpu = DirectX12/Vulkan (modern Windows, no GPU fallback)
-eframe = { version = "0.29", default-features = false, features = ["default_fonts", "glow", "wgpu", "persistence"] }
+# Rendering
+eframe = { version = "0.29", default-features = false, features = ["default_fonts", "glow", "persistence"] }
 
 [build-dependencies]
 winres = "0.1"

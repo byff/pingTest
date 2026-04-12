@@ -390,8 +390,6 @@ impl PingTestApp {
     }
 }
 
-// Non-Windows uses glow, needs the glow::Context param in on_exit
-// Windows uses wgpu, on_exit takes no param
 impl eframe::App for PingTestApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         if !self.theme_applied {
@@ -612,7 +610,7 @@ impl eframe::App for PingTestApp {
         });
     }
 
-    fn on_exit(&mut self) {
+    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
         self.engine.read().stop();
         self.config.save();
     }

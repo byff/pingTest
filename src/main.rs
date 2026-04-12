@@ -70,7 +70,7 @@ fn run_gui_mode(log_dir: &std::path::Path) {
     };
 
     eprintln!("[DEBUG] NativeOptions created");
-    eprintln!("[DEBUG] Calling eframe::run_native (glow + wgpu enabled)");
+    eprintln!("[DEBUG] Calling eframe::run_native (glow/OpenGL renderer)");
     eprintln!("[DEBUG] Platform: {}", std::env::consts::OS);
 
     let result = eframe::run_native(
