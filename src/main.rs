@@ -9,27 +9,22 @@ mod utils;
 
 use gui::app::PingTestApp;
 
-fn write_log(path: &std::path::Path, content: &str) {
-    if let Err(e) = std::fs::write(path, content) {
-        eprintln!("Failed to write log {}: {}", path.display(), e);
-    }
-}
-
 fn main() {
-    let exe = std::env::current_exe().ok();
-    let log_dir = exe.as_ref().map(|p| p.parent().unwrap_or(p));
+    // Get log directory once as owned PathBuf
+    let log_dir: Option<std::path::PathBuf> = std::env::current_exe()
+        .ok()
+        .map(|p| p.parent().unwrap_or(&p).to_path_buf());
+
+    // Clone for panic hook (closure captures ownership)
+    let log_dir_for_panic = log_dir.clone();
 
     // Panic hook - writes to file before anything else
-    std::panic::set_hook(Box::new(|panic_info| {
-        let msg = format!("[{}] PANIC: {}\n",
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .map(|d| d.as_secs())
-                .unwrap_or(0),
-            panic_info);
+    std::panic::set_hook(Box::new(move |panic_info| {
+        let msg = format!("PANIC: {}\n", panic_info);
         eprintln!("{}", msg);
-        if let Some(ref dir) = log_dir {
-            write_log(&dir.join("pingtest_panic.log"), &msg);
+        if let Some(ref dir) = log_dir_for_panic {
+            let path = dir.join("pingtest_panic.log");
+            let _ = std::fs::write(&path, &msg);
         }
     }));
 
@@ -67,7 +62,8 @@ fn main() {
         Err(e) => {
             log::error!("eframe error: {:?}", e);
             if let Some(ref dir) = log_dir {
-                write_log(&dir.join("pingtest_error.log"), &format!("eframe error: {:?}\n", e));
+                let path = dir.join("pingtest_error.log");
+                let _ = std::fs::write(&path, format!("eframe error: {:?}\n", e));
             }
         }
     }
