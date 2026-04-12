@@ -60,7 +60,7 @@ jobs:
       - name: Build ARM in Docker (for glibc compatibility)
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
-          # Use Ubuntu 20.04 container for ARM build (has glibc 2.31)
+          # Build in Ubuntu 20.04 container to get glibc 2.31
           docker run --rm \
             -v "${{ github.workspace }}":/workspace \
             -w /workspace \
@@ -71,7 +71,6 @@ jobs:
               . ~/.cargo/env
               cargo build --release --target aarch64-unknown-linux-gnu
             "
-          cp target/aarch64-unknown-linux-gnu/release/pingTest dist/pingTest-linux-aarch64 || true
           ls -la target/aarch64-unknown-linux-gnu/release/pingTest
 
       - name: Build
@@ -86,7 +85,7 @@ jobs:
           ls -la target/${{ matrix.target }}/release/pingTest* 2>/dev/null || true
 
       - name: Package .deb
-        if: matrix.format == 'deb' && matrix.target != 'aarch64-unknown-linux-gnu'
+        if: matrix.format == 'deb'
         run: |
           PKG_NAME="pingTest_${VERSION}_${{ matrix.arch }}.deb"
           mkdir -p dist
