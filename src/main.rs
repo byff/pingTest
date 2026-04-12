@@ -1,4 +1,5 @@
 // Windows: hide console window in release builds
+// Temporarily unhidden for debugging OpenGL/wgpu issues
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod config;
@@ -9,12 +10,29 @@ mod utils;
 
 use gui::app::PingTestApp;
 
-fn main() -> eframe::Result<()> {
+fn main() {
+    // Set up panic hook to write crash info to file
+    let panic_log = std::env::current_exe()
+        .ok()
+        .map(|p| p.with_file_name("pingtest_panic.log"));
+    let panic_log_clone = panic_log.clone();
+    std::panic::set_hook(Box::new(move |panic_info| {
+        let msg = format!(
+            "[{}] PANIC: {}\n",
+            chrono::Local::now().format("%Y-%m-%d %H:%M:%S"),
+            panic_info
+        );
+        eprintln!("{}", msg);
+        if let Some(ref path) = panic_log_clone {
+            let _ = std::fs::write(path, &msg);
+        }
+    }));
+
     // Initialize logging to stderr
-    env_logger::Builder::from_env(
+    let _ = env_logger::Builder::from_env(
         env_logger::Env::default().default_filter_or("info")
     ).format_timestamp_millis()
-     .init();
+     .try_init();
 
     log::info!("PingTest starting...");
 
@@ -28,14 +46,20 @@ fn main() -> eframe::Result<()> {
         ..Default::default()
     };
 
-    eframe::run_native(
+    log::info!("Calling eframe::run_native...");
+
+    let result = eframe::run_native(
         "PingTest",
         options,
         Box::new(|cc| {
             log::info!("Creating PingTestApp...");
             Ok(Box::new(PingTestApp::new(cc)))
         }),
-    )
+    );
+
+    if let Err(e) = result {
+        log::error!("eframe error: {:?}", e);
+    }
 }
 
 fn load_icon() -> egui::IconData {
