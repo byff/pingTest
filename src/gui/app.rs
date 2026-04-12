@@ -597,7 +597,7 @@ impl eframe::App for PingTestApp {
         });
     }
 
-    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
+    fn on_exit(&mut self) {
         self.engine.read().stop();
         self.config.save();
     }
