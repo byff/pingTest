@@ -270,6 +270,7 @@ impl PingTestApp {
 
     fn import_file(&mut self) {
         let initial_dir = self.config.last_import_dir.clone();
+        log::info!("Opening file import dialog...");
         let mut dialog = rfd::FileDialog::new()
             .add_filter("所有支持格式", &["txt", "csv", "xlsx"])
             .add_filter("文本文件", &["txt", "csv"])
@@ -281,17 +282,31 @@ impl PingTestApp {
 
         match dialog.pick_file() {
             Some(path) => {
+                log::info!("File selected: {:?}", path);
                 self.handle_file_drop(path);
             }
             None => {
-                // Dialog returned None - either cancelled or failed to open
-                // On Linux this often means GTK3/portal issue
+                log::error!("File dialog returned None - cancelled or failed to open");
                 #[cfg(target_os = "linux")]
                 {
-                    let msg = "请确保已安装 GTK3 和相关文件选择器组件：\n\n\
-                        Ubuntu/Debian: sudo apt install libgtk-3-0\n\
-                        Fedora: sudo dnf install gtk3\n\
-                        或使用 snap/flatpak 安装";
+                    log::error!("Linux detected - checking GTK3/portal availability...");
+                    // Try to detect if GTK3 is available
+                    let gtk_available = std::process::Command::new("pkg-config")
+                        .arg("--exists")
+                        .arg("gtk+-3.0")
+                        .status()
+                        .map(|s| s.success())
+                        .unwrap_or(false);
+                    
+                    log::error!("GTK3 available: {}", gtk_available);
+                    
+                    let msg = if gtk_available {
+                        "文件对话框无法打开\n\n可能是门户(portal)问题，尝试安装: sudo apt install xdg-desktop-portal xdg-desktop-portal-gtk"
+                    } else {
+                        "请确保已安装 GTK3 和相关组件:\n\n\
+                            Ubuntu/Debian: sudo apt install libgtk-3-0 xdg-desktop-portal xdg-desktop-portal-gtk\n\
+                            Fedora: sudo dnf install gtk3 xdg-desktop-portal"
+                    };
                     self.dialog_state.show_error("文件对话框无法打开", msg);
                 }
             }

@@ -57,10 +57,14 @@ jobs:
           sudo apt-get install -y -qq ruby ruby-dev rubygems build-essential
           sudo gem install fpm --no-document
 
+      - name: Install ImageMagick (for icon resizing)
+        if: matrix.format == 'deb'
+        run: |
+          sudo apt-get install -y -qq imagemagick
+
       - name: Build ARM in Docker (for glibc compatibility)
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
-          # Build in Ubuntu 20.04 container to get glibc 2.31
           docker run --rm \
             -v "${{ github.workspace }}":/workspace \
             -w /workspace \
@@ -88,17 +92,24 @@ jobs:
       - name: Package .deb
         if: matrix.format == 'deb'
         run: |
+          set -e
           PKG_NAME="pingTest_${VERSION}_${{ matrix.arch }}.deb"
           mkdir -p dist
-          # Prepare package directories
-          mkdir -p pkg/usr/share/icons/hicolor/256x256/apps
+          
+          # Prepare package directories for icons
+          mkdir -p pkg/usr/share/icons/hicolor/{16x16,24x24,32x32,48x48,64x64,128x128,256x256,512x512}/apps
           mkdir -p pkg/usr/share/applications
-          # Copy icons
-          cp -r assets/hicolor/* pkg/usr/share/icons/hicolor/
-          cp assets/rping.png pkg/usr/share/icons/hicolor/256x256/apps/pingtest.png
-          # Copy and fix .desktop file
-          cp assets/rping.desktop pkg/usr/share/applications/pingtest.desktop
-          sed -i 's|rping.png|pingtest.png|' pkg/usr/share/applications/pingtest.desktop
+          
+          # Generate icons at all required sizes using ImageMagick
+          # Use the main rping.png as source
+          for size in 16 24 32 48 64 128 256 512; do
+            convert assets/rping.png -resize ${size}x${size} pkg/usr/share/icons/hicolor/${size}x${size}/apps/pingtest.png
+          done
+          
+          # Copy .desktop file with correct icon path
+          cat assets/rping.desktop | sed 's|rping.png|pingtest|' > pkg/usr/share/applications/pingtest.desktop
+          
+          # Also install the binary as both pingTest and pingtest (lowercase for Linux convention)
           fpm -s dir -t deb \
             -n pingtest \
             -v ${VERSION} \
@@ -112,7 +123,12 @@ jobs:
             target/${{ matrix.target }}/release/pingTest=/usr/bin/pingTest \
             pkg/usr/share/icons=/usr/share/icons \
             pkg/usr/share/applications=/usr/share/applications
+          
+          # Also copy the standalone binary
           cp target/${{ matrix.target }}/release/pingTest dist/${{ matrix.name }}
+          
+          echo "=== .deb package created ==="
+          ls -la dist/
 
       - name: Package .exe
         if: matrix.format == 'exe'
