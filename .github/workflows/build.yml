@@ -66,7 +66,7 @@ jobs:
             -w /workspace \
             ubuntu:20.04 \
             sh -c "
-              apt-get update && apt-get install -y curl build-essential gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+              apt-get update && apt-get install -y curl build-essential gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libgtk-3-0 libayatana-appindicator3-1
               curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --target aarch64-unknown-linux-gnu
               . ~/.cargo/env
               cargo build --release --target aarch64-unknown-linux-gnu
@@ -118,7 +118,7 @@ jobs:
             -v ${VERSION} \
             -a ${{ matrix.arch }} \
             -p dist/${PKG_NAME} \
-            -d "libc6" \
+            -d "libc6, libgtk-3-0, libayatana-appindicator3-1" \
             --description "High-performance multi-target ping tool | Powered by byff" \
             --maintainer "byff" \
             --vendor "byff" \
