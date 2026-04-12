@@ -84,41 +84,26 @@ jobs:
           echo "=== Build done ==="
           ls -la target/${{ matrix.target }}/release/pingTest* 2>/dev/null || true
 
-      - name: Install ImageMagick (for icon generation)
-        if: matrix.format == 'deb'
-        run: |
-          sudo apt-get install -y -qq imagemagick
-
-      - name: Generate multi-size icons
-        if: matrix.format == 'deb'
-        run: |
-          mkdir -p assets/hicolor
-          for size in 16 24 32 48 64 128 256 512; do
-            dir="assets/hicolor/${size}x${size}/apps"
-            mkdir -p "$dir"
-            convert assets/rping.png -resize ${size}x${size} "$dir/rping.png"
-          done
-          echo "=== Generated multi-size icons ==="
-          ls -laR assets/hicolor/
-
       - name: Package .deb
         if: matrix.format == 'deb'
         run: |
           PKG_NAME="pingTest_${VERSION}_${{ matrix.arch }}.deb"
           mkdir -p dist
-          # Copy hicolor icons
-          ICON_DIR="pkg/usr/share/icons/hicolor"
-          cp -r assets/hicolor "$ICON_DIR"
-          # Copy .desktop file
-          DESKTOP_DIR="pkg/usr/share/applications"
-          mkdir -p "$DESKTOP_DIR"
-          sed 's|Icon=.*|Icon=/usr/share/icons/hicolor/256x256/apps/rping.png|' assets/rping.desktop > "$DESKTOP_DIR/pingtest.desktop"
+          # Prepare package directories
+          mkdir -p pkg/usr/share/icons/hicolor/256x256/apps
+          mkdir -p pkg/usr/share/applications
+          # Copy icons
+          cp -r assets/hicolor/* pkg/usr/share/icons/hicolor/
+          cp assets/rping.png pkg/usr/share/icons/hicolor/256x256/apps/pingtest.png
+          # Copy and fix .desktop file
+          cp assets/rping.desktop pkg/usr/share/applications/pingtest.desktop
+          sed -i 's|rping.png|pingtest.png|' pkg/usr/share/applications/pingtest.desktop
           fpm -s dir -t deb \
             -n pingtest \
             -v ${VERSION} \
             -a ${{ matrix.arch }} \
             -p dist/${PKG_NAME} \
-            -d "libc6, libgtk-3-0, libayatana-appindicator3-1" \
+            -d "libc6" \
             --description "High-performance multi-target ping tool | Powered by byff" \
             --maintainer "byff" \
             --vendor "byff" \
