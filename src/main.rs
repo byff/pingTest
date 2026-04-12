@@ -47,7 +47,7 @@ fn main() {
 
     log::info!("Calling eframe::run_native...");
 
-    if let Err(e) = eframe::run_native(
+    match eframe::run_native(
         "PingTest",
         options,
         Box::new(|cc| {
@@ -55,13 +55,17 @@ fn main() {
             Ok(Box::new(PingTestApp::new(cc)))
         }),
     ) {
-        log::error!("eframe error: {:?}", e);
-        if let Some(exe) = std::env::current_exe().ok() {
-            write_file(&exe.with_file_name("pingtest_error.log"), &format!("eframe error: {:?}\n", e));
+        Ok(_) => {
+            log::info!("PingTest exited normally");
+            write_file(&std::env::current_exe().unwrap().with_file_name("pingtest_exit.txt"), "exited_ok\n");
+        }
+        Err(e) => {
+            log::error!("eframe error: {:?}", e);
+            if let Some(exe) = std::env::current_exe().ok() {
+                write_file(&exe.with_file_name("pingtest_error.log"), &format!("eframe error: {:?}\n", e));
+            }
         }
     }
-
-    log::info!("PingTest exited");
 }
 
 fn load_icon() -> egui::IconData {
