@@ -346,8 +346,6 @@ impl PingTestApp {
 // Windows uses wgpu, on_exit takes no param
 impl eframe::App for PingTestApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // On startup: request focus and inject Ctrl+A for a few frames
-        if !self.input_focus_requested {
         if !self.theme_applied {
             theme::apply_theme(ctx);
             self.theme_applied = true;
