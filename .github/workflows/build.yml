@@ -22,7 +22,7 @@ jobs:
             format: deb
             arch: amd64
           - target: aarch64-unknown-linux-gnu
-            os: ubuntu-20.04
+            os: ubuntu-latest
             name: pingTest-linux-aarch64
             packages: gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
             format: deb
@@ -57,29 +57,36 @@ jobs:
           sudo apt-get install -y -qq ruby ruby-dev rubygems build-essential
           sudo gem install fpm --no-document
 
+      - name: Build ARM in Docker (for glibc compatibility)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          # Use Ubuntu 20.04 container for ARM build (has glibc 2.31)
+          docker run --rm \
+            -v "${{ github.workspace }}":/workspace \
+            -w /workspace \
+            ubuntu:20.04 \
+            sh -c "
+              apt-get update && apt-get install -y curl build-essential gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+              curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --target aarch64-unknown-linux-gnu
+              . ~/.cargo/env
+              cargo build --release --target aarch64-unknown-linux-gnu
+            "
+          cp target/aarch64-unknown-linux-gnu/release/pingTest dist/pingTest-linux-aarch64 || true
+          ls -la target/aarch64-unknown-linux-gnu/release/pingTest
+
       - name: Build
+        if: matrix.target != 'aarch64-unknown-linux-gnu'
         run: |
           set -e
           if [ "${{ matrix.target }}" = "x86_64-pc-windows-gnu" ]; then
             export WINDRES=x86_64-w64-mingw32-windres
-            echo "=== windres version ==="
-            x86_64-w64-mingw32-windres --version
-            echo "=== CARGO_CFG_TARGET_OS=$CARGO_CFG_TARGET_OS ==="
-            echo "=== CARGO_CFG_TARGET_ENV=$CARGO_CFG_TARGET_ENV ==="
-            echo "=== CARGO_MANIFEST_DIR contents ==="
-            ls -la assets/
-            echo "=== Running cargo build ==="
           fi
           cargo build --release --target ${{ matrix.target }}
           echo "=== Build done ==="
-          if [ "${{ matrix.target }}" = "x86_64-pc-windows-gnu" ]; then
-            echo "=== Check exe for .rsrc section ==="
-            objdump -x target/${{ matrix.target }}/release/pingTest.exe | grep -i "rsrc\|icon" || echo "No .rsrc or icon found"
-          fi
           ls -la target/${{ matrix.target }}/release/pingTest* 2>/dev/null || true
 
       - name: Package .deb
-        if: matrix.format == 'deb'
+        if: matrix.format == 'deb' && matrix.target != 'aarch64-unknown-linux-gnu'
         run: |
           PKG_NAME="pingTest_${VERSION}_${{ matrix.arch }}.deb"
           mkdir -p dist
@@ -102,7 +109,6 @@ jobs:
             target/${{ matrix.target }}/release/pingTest=/usr/bin/pingTest \
             pkg/usr/share/icons=/usr/share/icons \
             pkg/usr/share/applications=/usr/share/applications
-          # Also copy raw binary
           cp target/${{ matrix.target }}/release/pingTest dist/${{ matrix.name }}
 
       - name: Package .exe
