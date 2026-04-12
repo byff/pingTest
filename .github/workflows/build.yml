@@ -66,6 +66,7 @@ jobs:
             -w /workspace \
             ubuntu:20.04 \
             sh -c "
+              export DEBIAN_FRONTEND=noninteractive TZ=UTC
               apt-get update && apt-get install -y curl build-essential gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libgtk-3-0 libayatana-appindicator3-1
               curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --target aarch64-unknown-linux-gnu
               . ~/.cargo/env
