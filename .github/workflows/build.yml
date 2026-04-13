@@ -15,18 +15,6 @@ jobs:
             name: pingTest-windows-x86_64.exe
             packages: gcc-mingw-w64-x86-64 mingw-w64-tools binutils-mingw-w64
             format: exe
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-            name: pingTest-linux-x86_64
-            packages: ""
-            format: deb
-            arch: amd64
-          - target: aarch64-unknown-linux-gnu
-            os: ubuntu-latest
-            name: pingTest-linux-aarch64
-            packages: gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-            format: deb
-            arch: arm64
 
     runs-on: ${{ matrix.os }}
 
@@ -55,12 +43,6 @@ jobs:
         run: |
           cargo install tauri-cli --version "^2"
 
-      - name: Install fpm (for .deb)
-        if: matrix.format == 'deb'
-        run: |
-          sudo apt-get install -y -qq ruby ruby-dev rubygems build-essential
-          sudo gem install fpm --no-document
-
       - name: Build Tauri
         run: |
           set -e
@@ -73,16 +55,13 @@ jobs:
           ls -la src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi 2>/dev/null || true
 
       - name: Package .exe
-        if: matrix.format == 'exe'
         run: |
           mkdir -p dist
-          # Find the built .exe (Tauri outputs to bundle/nsis or bundle/msi)
           if ls src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe 2>/dev/null; then
             cp src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe dist/${{ matrix.name }}
           elif ls src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi 2>/dev/null; then
             cp src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi dist/${{ matrix.name }}.msi
           fi
-          # Also copy the raw binary
           if [ -f "src-tauri/target/${{ matrix.target }}/release/pingTest.exe" ]; then
             cp src-tauri/target/${{ matrix.target }}/release/pingTest.exe dist/${{ matrix.name }}
           fi
