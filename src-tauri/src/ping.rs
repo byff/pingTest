@@ -1,3 +1,6 @@
+// Ping module - stub that re-exports from main project
+// In a full setup, this would be copied from pingTest/src/ping/mod.rs
+
 use std::net::IpAddr;
 use std::sync::Arc;
 use std::time::{Duration, Instant};

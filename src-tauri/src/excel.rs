@@ -1,3 +1,6 @@
+// Excel module - stub that re-exports from main project
+// In a full setup, this would be copied from pingTest/src/excel/mod.rs
+
 use calamine::{open_workbook, Reader, Xlsx, Xls, Data};
 use rust_xlsxwriter::{Workbook, Format};
 use std::io::BufReader;
@@ -7,7 +10,6 @@ use std::path::Path;
 use crate::ping::PingTarget;
 use crate::config::ExportConfig;
 
-/// Read Excel file and return headers + rows
 pub fn read_excel(path: &Path) -> Result<(Vec<String>, Vec<Vec<String>>), String> {
     let ext = path.extension()
         .and_then(|e| e.to_str())
@@ -72,7 +74,6 @@ fn read_text(path: &Path) -> Result<(Vec<String>, Vec<Vec<String>>), String> {
     Ok((headers, lines))
 }
 
-/// Export ping results to a new Excel file
 pub fn export_results(
     path: &Path,
     targets: &[PingTarget],
@@ -134,73 +135,5 @@ pub fn export_results(
     }
 
     workbook.save(path).map_err(|e| e.to_string())?;
-    Ok(())
-}
-
-/// Insert results into an existing Excel file (append columns)
-pub fn insert_results_to_excel(
-    source_path: &Path,
-    output_path: &Path,
-    targets: &[PingTarget],
-    ip_col_idx: usize,
-    config: &ExportConfig,
-) -> Result<(), String> {
-    let (headers, rows) = read_excel(source_path)?;
-
-    let mut workbook = Workbook::new();
-    let sheet = workbook.add_worksheet();
-    let header_fmt = Format::new().set_bold();
-
-    // Write original headers
-    for (i, h) in headers.iter().enumerate() {
-        sheet.write_string_with_format(0, i as u16, h, &header_fmt).map_err(|e| e.to_string())?;
-    }
-
-    // Add result headers
-    let start_col = headers.len() as u16;
-    let mut extra_headers: Vec<(String, String)> = Vec::new();
-    if config.export_success_count { extra_headers.push(("成功次数".into(), "success".into())); }
-    if config.export_fail_count { extra_headers.push(("失败次数".into(), "fail".into())); }
-    if config.export_fail_rate { extra_headers.push(("失败率(%)".into(), "fail_rate".into())); }
-    if config.export_max_rtt { extra_headers.push(("最大延迟(ms)".into(), "max_rtt".into())); }
-    if config.export_min_rtt { extra_headers.push(("最小延迟(ms)".into(), "min_rtt".into())); }
-    if config.export_avg_rtt { extra_headers.push(("平均延迟(ms)".into(), "avg_rtt".into())); }
-
-    for (i, (name, _)) in extra_headers.iter().enumerate() {
-        sheet.write_string_with_format(0, start_col + i as u16, name, &header_fmt)
-            .map_err(|e| e.to_string())?;
-    }
-
-    // Write original data + results
-    for (row_idx, row) in rows.iter().enumerate() {
-        let excel_row = (row_idx + 1) as u32;
-
-        // Write original columns
-        for (col_idx, cell) in row.iter().enumerate() {
-            sheet.write_string(excel_row, col_idx as u16, cell).map_err(|e| e.to_string())?;
-        }
-
-        // Find matching target by IP
-        if let Some(ip_str) = row.get(ip_col_idx) {
-            let ip_trimmed = ip_str.trim();
-            if let Some(target) = targets.iter().find(|t| t.ip.to_string() == ip_trimmed || t.hostname == ip_trimmed) {
-                let stats = target.stats.read();
-                for (i, (_, col_type)) in extra_headers.iter().enumerate() {
-                    let c = start_col + i as u16;
-                    match col_type.as_str() {
-                        "success" => { sheet.write_number(excel_row, c, stats.success_count as f64).map_err(|e| e.to_string())?; }
-                        "fail" => { sheet.write_number(excel_row, c, stats.fail_count as f64).map_err(|e| e.to_string())?; }
-                        "fail_rate" => { sheet.write_number(excel_row, c, stats.fail_rate()).map_err(|e| e.to_string())?; }
-                        "max_rtt" => { sheet.write_number(excel_row, c, stats.max_rtt_us as f64 / 1000.0).map_err(|e| e.to_string())?; }
-                        "min_rtt" => { sheet.write_number(excel_row, c, stats.min_rtt_us as f64 / 1000.0).map_err(|e| e.to_string())?; }
-                        "avg_rtt" => { sheet.write_number(excel_row, c, stats.avg_rtt_us() as f64 / 1000.0).map_err(|e| e.to_string())?; }
-                        _ => {}
-                    }
-                }
-            }
-        }
-    }
-
-    workbook.save(output_path).map_err(|e| e.to_string())?;
     Ok(())
 }

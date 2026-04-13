@@ -1,64 +1,10 @@
 [package]
-name = "pingtest"
+name = "pingtest-workspace"
 version = "1.1.0"
 edition = "2021"
-description = "High-performance multi-target ping tool | Powered by byff"
-authors = ["byff"]
-license = "MIT"
-repository = "https://github.com/byff/pingTest"
 
-[[bin]]
-name = "pingTest"
-path = "src/main.rs"
-
-[dependencies]
-# GUI
-egui = "0.29"
-egui_extras = { version = "0.29", features = ["syntect"] }
-
-# Async runtime
-tokio = { version = "1", features = ["rt-multi-thread", "net", "time", "sync", "macros"] }
-
-# Ping
-surge-ping = "0.8"
-socket2 = "0.5"
-
-# Excel
-calamine = "0.26"
-rust_xlsxwriter = "0.79"
-
-# Config
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-
-# Network utils
-ipnetwork = "0.20"
-
-# DNS resolve
-dns-lookup = "2"
-
-# File dialog
-rfd = "0.15"
-
-# Logging
-arboard = "3.6"
-log = "0.4"
-env_logger = "0.11"
-
-# Misc
-chrono = "0.4"
-parking_lot = "0.12"
-
-# IP extraction from messy text
-regex = "1"
-
-# Rendering - enable BOTH glow and wgpu so eframe can pick whichever works
-# glow = OpenGL 2.0+ (desktop with GPU)
-# wgpu = DirectX12/Vulkan (modern Windows, no GPU fallback)
-eframe = { version = "0.29", default-features = false, features = ["default_fonts", "glow", "wgpu", "persistence"] }
-
-[build-dependencies]
-winres = "0.1"
+[workspace]
+members = ["src-tauri"]
 
 [profile.release]
 opt-level = "z"

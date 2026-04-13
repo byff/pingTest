@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PingTest | 批量Ping测试工具</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <h1 class="app-title">PingTest</h1>
+                <span class="app-subtitle">批量Ping测试工具</span>
+            </div>
+            <div class="header-right">
+                <span id="connectionStatus" class="status-indicator status-disconnected">未连接</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Panel: Controls -->
+            <aside class="control-panel">
+                <!-- Target Input Section -->
+                <section class="panel-section">
+                    <h2 class="section-title">目标输入</h2>
+                    <div class="input-group">
+                        <textarea 
+                            id="targetInput" 
+                            class="target-textarea"
+                            placeholder="输入IP地址或CIDR范围，每行一个&#10;例如：&#10;192.168.1.1&#10;10.0.0.1/24&#10;8.8.8.8"
+                            rows="8"
+                        ></textarea>
+                        <div class="input-actions">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="stripFirstLast" checked>
+                                <span>排除首尾IP</span>
+                            </label>
+                            <button id="btnCountTargets" class="btn btn-secondary">计数</button>
+                            <button id="btnClearInput" class="btn btn-secondary">清空</button>
+                        </div>
+                        <div class="target-count-info">
+                            <span>目标数量: </span>
+                            <span id="targetCount" class="count-number">0</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Ping Settings Section -->
+                <section class="panel-section">
+                    <h2 class="section-title">Ping设置</h2>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label for="timeoutMs">超时 (ms)</label>
+                            <input type="number" id="timeoutMs" value="1000" min="100" max="30000" step="100">
+                        </div>
+                        <div class="setting-item">
+                            <label for="intervalMs">间隔 (ms)</label>
+                            <input type="number" id="intervalMs" value="1000" min="100" max="10000" step="100">
+                        </div>
+                        <div class="setting-item">
+                            <label for="packetSize">数据包大小</label>
+                            <input type="number" id="packetSize" value="128" min="32" max="65535" step="32">
+                        </div>
+                        <div class="setting-item">
+                            <label for="maxConcurrent">最大并发</label>
+                            <input type="number" id="maxConcurrent" value="200" min="1" max="1000" step="10">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Control Buttons -->
+                <section class="panel-section control-buttons">
+                    <button id="btnLoadExcel" class="btn btn-secondary">
+                        <span class="btn-icon">📁</span> 导入Excel
+                    </button>
+                    <button id="btnSetTargets" class="btn btn-primary">
+                        <span class="btn-icon">✓</span> 设置目标
+                    </button>
+                    <button id="btnStartPing" class="btn btn-success" disabled>
+                        <span class="btn-icon">▶</span> 开始Ping
+                    </button>
+                    <button id="btnStopPing" class="btn btn-danger" disabled>
+                        <span class="btn-icon">■</span> 停止
+                    </button>
+                    <button id="btnExportExcel" class="btn btn-secondary" disabled>
+                        <span class="btn-icon">📤</span> 导出结果
+                    </button>
+                </section>
+
+                <!-- Statistics Summary -->
+                <section class="panel-section stats-summary">
+                    <h2 class="section-title">统计摘要</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">总目标</span>
+                            <span id="statTotal" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">存活</span>
+                            <span id="statAlive" class="stat-value stat-alive">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">离线</span>
+                            <span id="statDead" class="stat-value stat-dead">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">成功率</span>
+                            <span id="statSuccessRate" class="stat-value">0%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">成功次数</span>
+                            <span id="statSuccessCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">失败次数</span>
+                            <span id="statFailCount" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- Right Panel: Results Table -->
+            <section class="results-panel">
+                <div class="results-header">
+                    <h2 class="section-title">Ping结果</h2>
+                    <div class="results-actions">
+                        <input type="text" id="searchFilter" class="search-input" placeholder="搜索...">
+                        <button id="btnRefreshStats" class="btn btn-secondary btn-small">刷新</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="results-table" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th class="col-index">#</th>
+                                <th class="col-hostname">主机名</th>
+                                <th class="col-ip">IP地址</th>
+                                <th class="col-status">状态</th>
+                                <th class="col-success">成功</th>
+                                <th class="col-fail">失败</th>
+                                <th class="col-fail-rate">失败率</th>
+                                <th class="col-sent">已发</th>
+                                <th class="col-last-rtt">延迟(ms)</th>
+                                <th class="col-avg-rtt">平均</th>
+                                <th class="col-min-rtt">最小</th>
+                                <th class="col-max-rtt">最大</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                            <tr class="empty-row">
+                                <td colspan="11" class="empty-message">暂无数据，请先设置目标并开始Ping测试</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <span class="footer-info">PingTest v1.0 | Tauri 2.x</span>
+            <span id="runningStatus" class="running-status">状态: 空闲</span>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <span class="loading-text">处理中...</span>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="main.js" type="module"></script>
+</body>
+</html>

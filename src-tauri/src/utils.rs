@@ -1,3 +1,6 @@
+// Utils module - stub that re-exports from main project
+// In a full setup, this would be copied from pingTest/src/utils/mod.rs
+
 use std::net::IpAddr;
 use ipnetwork::IpNetwork;
 use regex::Regex;
@@ -15,15 +18,12 @@ fn network_ip_count(network: &IpNetwork) -> u128 {
     }
 }
 
-/// Extract and clean IP addresses from messy text containing Chinese, mixed characters, etc.
-/// Returns cleaned text with one IP/CIDR/domain per line.
 pub fn extract_and_clean_ips(input: &str) -> String {
-    // Match IPv4, IPv4/CIDR, or domain-like patterns
     let ip_re = Regex::new(
         r"(?x)
-        (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:/\d{1,2})?)  # IPv4 or IPv4/CIDR
+        (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:/\d{1,2})?)
         |
-        ([a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,})+)  # domain
+        ([a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,})+)  
         "
     ).unwrap();
 
@@ -33,7 +33,6 @@ pub fn extract_and_clean_ips(input: &str) -> String {
     for cap in ip_re.captures_iter(input) {
         let matched = cap.get(0).unwrap().as_str().to_string();
 
-        // Validate: if it looks like an IP, check octets
         if let Some(ip_part) = cap.get(1) {
             let ip_str = ip_part.as_str();
             let base_ip = ip_str.split('/').next().unwrap_or(ip_str);
@@ -56,9 +55,6 @@ pub fn extract_and_clean_ips(input: &str) -> String {
     results.join("\n")
 }
 
-/// Parse input text into a list of IP addresses.
-/// Returns (targets, skipped_count).
-/// If strip_first_last is true, CIDR ranges will exclude network and broadcast addresses.
 pub fn parse_targets(input: &str, strip_first_last: bool) -> (Vec<(String, IpAddr)>, usize) {
     let mut results = Vec::new();
     let mut skipped = 0usize;
@@ -105,7 +101,6 @@ pub fn parse_targets(input: &str, strip_first_last: bool) -> (Vec<(String, IpAdd
     (results, skipped)
 }
 
-/// Count how many IPs a CIDR would expand to
 pub fn count_cidr_ips(input: &str) -> usize {
     let mut count = 0usize;
     let lines: Vec<&str> = input
@@ -126,7 +121,6 @@ pub fn count_cidr_ips(input: &str) -> usize {
     count
 }
 
-/// Find columns in Excel data that contain IP addresses
 pub fn find_ip_columns(headers: &[String], rows: &[Vec<String>]) -> Vec<(usize, String)> {
     let mut ip_cols = Vec::new();
 

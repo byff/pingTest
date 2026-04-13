@@ -1,3 +1,6 @@
+// Config module - stub that re-exports from main project
+// In a full setup, this would be copied from pingTest/src/config/mod.rs
+
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -117,7 +120,6 @@ impl Default for ExportConfig {
 
 impl AppConfig {
     pub fn config_path() -> PathBuf {
-        // Use XDG config directory on Linux, exe directory on Windows
         #[cfg(target_os = "linux")]
         {
             if let Ok(xdg) = std::env::var("XDG_CONFIG_HOME") {
@@ -128,7 +130,6 @@ impl AppConfig {
             }
         }
         
-        // Fallback to exe directory
         let exe_dir = std::env::current_exe()
             .ok()
             .and_then(|p| p.parent().map(|p| p.to_path_buf()))
@@ -150,7 +151,6 @@ impl AppConfig {
 
     pub fn save(&self) {
         let path = Self::config_path();
-        // Create parent directory if needed
         if let Some(parent) = path.parent() {
             let _ = std::fs::create_dir_all(parent);
         }
