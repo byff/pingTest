@@ -54,16 +54,14 @@ jobs:
       - name: Package .exe
         run: |
           mkdir -p dist
-          EXE_PATH="src-tauri/target/${{ matrix.target }}/release/pingTest.exe"
+          # Note: cargo builds into pingTest/target/ (repo name), not src-tauri/target/
+          EXE_PATH="pingTest/target/${{ matrix.target }}/release/pingTest.exe"
           if [ -f "$EXE_PATH" ]; then
             cp "$EXE_PATH" "dist/${{ matrix.name }}"
             echo "Copied exe: $EXE_PATH"
-          fi
-          if ls src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe 2>/dev/null; then
-            cp src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe dist/
-          fi
-          if ls src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi 2>/dev/null; then
-            cp src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi dist/
+          else
+            echo "ERROR: exe not found at $EXE_PATH"
+            ls -la pingTest/target/${{ matrix.target }}/release/ 2>/dev/null || echo "release dir not found"
           fi
           ls -la dist/
 
