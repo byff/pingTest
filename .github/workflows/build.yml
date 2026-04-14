@@ -13,7 +13,7 @@ jobs:
           - target: x86_64-pc-windows-gnu
             os: ubuntu-latest
             name: pingTest-windows-x86_64.exe
-            packages: gcc-mingw-w64-x86-64 mingm-w64-tools binutils-mingw-w64
+            packages: gcc-mingw-w64-x86-64 mingw-w64-tools binutils-mingw-w64
 
     runs-on: ${{ matrix.os }}
 
@@ -49,9 +49,7 @@ jobs:
           fi
           cargo tauri build --target ${{ matrix.target }} --no-bundle
           echo "=== Build done ==="
-          pwd
           ls -la pingTest/target/${{ matrix.target }}/release/pingTest.exe 2>/dev/null || echo "exe not found"
-          ls -la pingTest/target/${{ matrix.target }}/release/bundle/ 2>/dev/null || echo "bundle dir not found"
 
       - name: Package .exe
         run: |
@@ -59,7 +57,7 @@ jobs:
           EXE="pingTest/target/${{ matrix.target }}/release/pingTest.exe"
           if [ -f "$EXE" ]; then
             cp "$EXE" "dist/${{ matrix.name }}"
-            echo "SUCCESS: copied $EXE to dist/${{ matrix.name }}"
+            echo "SUCCESS: copied to dist/${{ matrix.name }}"
           else
             echo "ERROR: $EXE not found"
             ls -la pingTest/target/${{ matrix.target }}/release/ 2>/dev/null || echo "release dir missing"
