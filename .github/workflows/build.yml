@@ -53,8 +53,12 @@ jobs:
         run: |
           if [ "${{ matrix.target }}" = "x86_64-pc-windows-gnu" ]; then
             export WINDRES=x86_64-w64-mingw32-windres
+            # Ubuntu: skip bundler (no NSIS), use --no-bundle
+            cargo tauri build --target ${{ matrix.target }} --no-bundle || true
+          else
+            # Windows: native build, full bundler works
+            cargo tauri build --target ${{ matrix.target }}
           fi
-          cargo tauri build --target ${{ matrix.target }}
 
       - name: Package .exe
         run: |
