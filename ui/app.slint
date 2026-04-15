@@ -1,6 +1,22 @@
 // PingTest - Slint UI Application
 // A network ping testing tool with results table and export capabilities
 
+// === TABLE ROW STRUCTURE ===
+struct TableRow {
+    num: int,
+    hostname: string,
+    ip: string,
+    success: int,
+    fail: int,
+    fail_pct: string,
+    total: int,
+    rtt: string,
+    rtt_max: string,
+    rtt_min: string,
+    rtt_avg: string,
+    status: int  // -1=unknown, 0=alive, 1=partial, 2=failed
+}
+
 export component MainWindow {
     // === COLOR PALETTE ===
     property <color> accent: #409CFF;
@@ -49,10 +65,10 @@ export component MainWindow {
 
     // === SAMPLE TABLE DATA ===
     property <[TableRow]> table_rows: [
-        TableRow { num: 1; hostname: "router.local"; ip: "192.168.1.1"; success: 10; fail: 0; fail_pct: "0%"; total: 10; rtt: "1.5ms"; rtt_max: "2.1ms"; rtt_min: "1.2ms"; rtt_avg: "1.5ms"; status: 0; },
-        TableRow { num: 2; hostname: "server1.local"; ip: "192.168.1.10"; success: 8; fail: 2; fail_pct: "20%"; total: 10; rtt: "5.3ms"; rtt_max: "8.2ms"; rtt_min: "3.1ms"; rtt_avg: "5.1ms"; status: 1; },
-        TableRow { num: 3; hostname: "server2.local"; ip: "192.168.1.11"; success: 3; fail: 7; fail_pct: "70%"; total: 10; rtt: "12.5ms"; rtt_max: "25.0ms"; rtt_min: "8.0ms"; rtt_avg: "14.2ms"; status: 2; },
-        TableRow { num: 4; hostname: "unknown.host"; ip: "10.0.0.1"; success: 0; fail: 0; fail_pct: "-"; total: 0; rtt: "-"; rtt_max: "-"; rtt_min: "-"; rtt_avg: "-"; status: -1; },
+        { num: 1, hostname: "router.local", ip: "192.168.1.1", success: 10, fail: 0, fail_pct: "0%", total: 10, rtt: "1.5ms", rtt_max: "2.1ms", rtt_min: "1.2ms", rtt_avg: "1.5ms", status: 0 },
+        { num: 2, hostname: "server1.local", ip: "192.168.1.10", success: 8, fail: 2, fail_pct: "20%", total: 10, rtt: "5.3ms", rtt_max: "8.2ms", rtt_min: "3.1ms", rtt_avg: "5.1ms", status: 1 },
+        { num: 3, hostname: "server2.local", ip: "192.168.1.11", success: 3, fail: 7, fail_pct: "70%", total: 10, rtt: "12.5ms", rtt_max: "25.0ms", rtt_min: "8.0ms", rtt_avg: "14.2ms", status: 2 },
+        { num: 4, hostname: "unknown.host", ip: "10.0.0.1", success: 0, fail: 0, fail_pct: "-", total: 0, rtt: "-", rtt_max: "-", rtt_min: "-", rtt_avg: "-", status: -1 },
     ];
 
     // === CALLBACKS ===
@@ -1301,17 +1317,5 @@ export component MainWindow {
 }
 
 // === TABLE ROW STRUCTURE ===
-struct TableRow {
-    num: int,
-    hostname: string,
-    ip: string,
-    success: int,
-    fail: int,
-    fail_pct: string,
-    total: int,
-    rtt: string,
-    rtt_max: string,
-    rtt_min: string,
-    rtt_avg: string,
-    status: int  // -1=unknown, 0=alive, 1=partial, 2=failed
-}
+// (moved to top of file)
+// (this comment prevents empty trailing lines)
