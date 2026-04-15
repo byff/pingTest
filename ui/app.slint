@@ -114,15 +114,14 @@ export component MainWindow {
                     horizontal_stretch: 0;
                     width: 70px;
                     height: 32px;
-                    cursor: MouseCursor.pointer;
 
                     Text {
                         text: "Start";
                         color: white;
                         font_size: 13px;
                         font_weight: 700;
-                        horizontal_alignment: center;
-                        vertical_alignment: center;
+                        horizontal_alignment: HorizontalAlignment.center;
+                        vertical_alignment: VerticalAlignment.center;
                     }
 
                     TouchArea {
@@ -142,15 +141,14 @@ export component MainWindow {
                     background: !root.is_running ? root.text_dim : root.fail;
                     width: 70px;
                     height: 32px;
-                    cursor: MouseCursor.pointer;
 
                     Text {
                         text: "Stop";
                         color: white;
                         font_size: 13px;
                         font_weight: 700;
-                        horizontal_alignment: center;
-                        vertical_alignment: center;
+                        horizontal_alignment: HorizontalAlignment.center;
+                        vertical_alignment: VerticalAlignment.center;
                     }
 
                     TouchArea {
@@ -170,15 +168,14 @@ export component MainWindow {
                     background: root.warning;
                     width: 80px;
                     height: 32px;
-                    cursor: MouseCursor.pointer;
 
                     Text {
                         text: "Refresh";
                         color: white;
                         font_size: 13px;
                         font_weight: 700;
-                        horizontal_alignment: center;
-                        vertical_alignment: center;
+                        horizontal_alignment: HorizontalAlignment.center;
+                        vertical_alignment: VerticalAlignment.center;
                     }
 
                     TouchArea {
@@ -202,14 +199,13 @@ export component MainWindow {
                     background: root.accent;
                     width: 70px;
                     height: 32px;
-                    cursor: MouseCursor.pointer;
 
                     Text {
                         text: "Import";
                         color: white;
                         font_size: 13px;
-                        horizontal_alignment: center;
-                        vertical_alignment: center;
+                        horizontal_alignment: HorizontalAlignment.center;
+                        vertical_alignment: VerticalAlignment.center;
                     }
 
                     TouchArea {
@@ -225,14 +221,13 @@ export component MainWindow {
                     background: root.accent;
                     width: 100px;
                     height: 32px;
-                    cursor: MouseCursor.pointer;
 
                     Text {
                         text: "Export Results";
                         color: white;
                         font_size: 13px;
-                        horizontal_alignment: center;
-                        vertical_alignment: center;
+                        horizontal_alignment: HorizontalAlignment.center;
+                        vertical_alignment: VerticalAlignment.center;
                     }
 
                     TouchArea {
@@ -248,14 +243,13 @@ export component MainWindow {
                     background: root.accent;
                     width: 110px;
                     height: 32px;
-                    cursor: MouseCursor.pointer;
 
                     Text {
                         text: "Insert to Source";
                         color: white;
                         font_size: 13px;
-                        horizontal_alignment: center;
-                        vertical_alignment: center;
+                        horizontal_alignment: HorizontalAlignment.center;
+                        vertical_alignment: VerticalAlignment.center;
                     }
 
                     TouchArea {
@@ -274,14 +268,13 @@ export component MainWindow {
                     background: root.text_dim;
                     width: 80px;
                     height: 32px;
-                    cursor: MouseCursor.pointer;
 
                     Text {
                         text: "Settings";
                         color: white;
                         font_size: 13px;
-                        horizontal_alignment: center;
-                        vertical_alignment: center;
+                        horizontal_alignment: HorizontalAlignment.center;
+                        vertical_alignment: VerticalAlignment.center;
                     }
 
                     TouchArea {
@@ -297,14 +290,13 @@ export component MainWindow {
                     background: root.text_dim;
                     width: 70px;
                     height: 32px;
-                    cursor: MouseCursor.pointer;
 
                     Text {
                         text: "About";
                         color: white;
                         font_size: 13px;
-                        horizontal_alignment: center;
-                        vertical_alignment: center;
+                        horizontal_alignment: HorizontalAlignment.center;
+                        vertical_alignment: VerticalAlignment.center;
                     }
 
                     TouchArea {
@@ -361,7 +353,7 @@ export component MainWindow {
 
                     // Table Header
                     Rectangle {
-                        background-color: #252830;
+                        background: #252830;
                         height: 32px;
 
                         HorizontalLayout {
@@ -372,15 +364,14 @@ export component MainWindow {
                             // # Column
                             Rectangle {
                                 width: 40px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "#";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -391,15 +382,14 @@ export component MainWindow {
                             // Hostname Column
                             Rectangle {
                                 width: 130px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "Hostname";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -410,15 +400,14 @@ export component MainWindow {
                             // IP Column
                             Rectangle {
                                 width: 120px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "IP";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -429,15 +418,14 @@ export component MainWindow {
                             // Success Column
                             Rectangle {
                                 width: 60px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "Success";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -448,15 +436,14 @@ export component MainWindow {
                             // Fail Column
                             Rectangle {
                                 width: 50px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "Fail";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -467,15 +454,14 @@ export component MainWindow {
                             // Fail% Column
                             Rectangle {
                                 width: 60px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "Fail%";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -486,15 +472,14 @@ export component MainWindow {
                             // Total Column
                             Rectangle {
                                 width: 55px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "Total";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -505,15 +490,14 @@ export component MainWindow {
                             // RTT Column
                             Rectangle {
                                 width: 80px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "RTT(ms)";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -524,15 +508,14 @@ export component MainWindow {
                             // Max Column
                             Rectangle {
                                 width: 75px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "Max";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -543,15 +526,14 @@ export component MainWindow {
                             // Min Column
                             Rectangle {
                                 width: 75px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "Min";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -562,15 +544,14 @@ export component MainWindow {
                             // Avg Column
                             Rectangle {
                                 width: 75px;
-                                cursor: MouseCursor.pointer;
 
                                 Text {
                                     text: "Avg";
                                     color: root.accent;
                                     font_size: 12px;
                                     font_weight: 700;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 TouchArea {
@@ -599,8 +580,8 @@ export component MainWindow {
                                     text: row.num;
                                     color: root.text_dim;
                                     font_size: 12px;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 // Hostname
@@ -609,8 +590,8 @@ export component MainWindow {
                                     text: row.hostname;
                                     color: white;
                                     font_size: 12px;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 // IP with status color
@@ -620,8 +601,8 @@ export component MainWindow {
                                     color: row.status == 0 ? root.success : (row.status == 1 ? root.warning : (row.status == 2 ? root.fail : root.text_dim));
                                     font_size: 12px;
                                     font_weight: row.status == 0 ? bold : normal;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 // Success
@@ -630,8 +611,8 @@ export component MainWindow {
                                     text: row.success;
                                     color: root.success;
                                     font_size: 12px;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 // Fail
@@ -640,8 +621,8 @@ export component MainWindow {
                                     text: row.fail;
                                     color: root.fail;
                                     font_size: 12px;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 // Fail% with color coding
@@ -650,8 +631,8 @@ export component MainWindow {
                                     text: row.fail_pct;
                                     color: row.fail_pct == "-" ? root.text_dim : (row.fail_pct == "0%" ? root.success : (row.fail_pct == "10%" ? root.warning : (row.fail > 5 ? root.fail : root.warning)));
                                     font_size: 12px;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 // Total
@@ -660,8 +641,8 @@ export component MainWindow {
                                     text: row.total;
                                     color: white;
                                     font_size: 12px;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 // RTT
@@ -670,8 +651,8 @@ export component MainWindow {
                                     text: row.rtt;
                                     color: row.rtt == "-" ? root.text_dim : root.accent;
                                     font_size: 12px;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 // Max
@@ -680,8 +661,8 @@ export component MainWindow {
                                     text: row.rtt_max;
                                     color: row.rtt_max == "-" ? root.text_dim : root.accent;
                                     font_size: 12px;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 // Min
@@ -690,8 +671,8 @@ export component MainWindow {
                                     text: row.rtt_min;
                                     color: row.rtt_min == "-" ? root.text_dim : root.accent;
                                     font_size: 12px;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
 
                                 // Avg
@@ -700,8 +681,8 @@ export component MainWindow {
                                     text: row.rtt_avg;
                                     color: row.rtt_avg == "-" ? root.text_dim : root.accent;
                                     font_size: 12px;
-                                    horizontal_alignment: center;
-                                    vertical_alignment: center;
+                                    horizontal_alignment: HorizontalAlignment.center;
+                                    vertical_alignment: VerticalAlignment.center;
                                 }
                             }
                         }
@@ -722,7 +703,7 @@ export component MainWindow {
                     text: root.status_message;
                     color: root.text_dim;
                     font_size: 12px;
-                    vertical_alignment: center;
+                    vertical_alignment: VerticalAlignment.center;
                 }
 
                 Rectangle { horizontal_stretch: 1; }
@@ -731,7 +712,7 @@ export component MainWindow {
                     text: "IPs: " + root.selected_ip_count;
                     color: root.text_dim;
                     font_size: 12px;
-                    vertical_alignment: center;
+                    vertical_alignment: VerticalAlignment.center;
                 }
             }
         }
@@ -763,7 +744,7 @@ export component MainWindow {
                     color: root.accent;
                     font_size: 18px;
                     font_weight: 700;
-                    horizontal_alignment: center;
+                    horizontal_alignment: HorizontalAlignment.center;
                 }
 
                 // Ping Parameters Section
@@ -918,7 +899,7 @@ export component MainWindow {
                                 text: "Enable CIDR notation support";
                                 color: white;
                                 font_size: 12px;
-                                vertical_alignment: center;
+                                vertical_alignment: VerticalAlignment.center;
                             }
                         }
 
@@ -934,7 +915,7 @@ export component MainWindow {
                                 text: "Remember addresses between sessions";
                                 color: white;
                                 font_size: 12px;
-                                vertical_alignment: center;
+                                vertical_alignment: VerticalAlignment.center;
                             }
                         }
 
@@ -950,7 +931,7 @@ export component MainWindow {
                                 text: "Debug mode";
                                 color: white;
                                 font_size: 12px;
-                                vertical_alignment: center;
+                                vertical_alignment: VerticalAlignment.center;
                             }
                         }
                     }
@@ -980,31 +961,31 @@ export component MainWindow {
                             HorizontalLayout {
                                 spacing: 4px;
                                 CheckBox { checked <=> root.export_hostname; }
-                                Text { text: "Hostname"; color: white; font_size: 11px; vertical_alignment: center; }
+                                Text { text: "Hostname"; color: white; font_size: 11px; vertical_alignment: VerticalAlignment.center; }
                             }
 
                             HorizontalLayout {
                                 spacing: 4px;
                                 CheckBox { checked <=> root.export_ip; }
-                                Text { text: "IP"; color: white; font_size: 11px; vertical_alignment: center; }
+                                Text { text: "IP"; color: white; font_size: 11px; vertical_alignment: VerticalAlignment.center; }
                             }
 
                             HorizontalLayout {
                                 spacing: 4px;
                                 CheckBox { checked <=> root.export_success; }
-                                Text { text: "Success"; color: white; font_size: 11px; vertical_alignment: center; }
+                                Text { text: "Success"; color: white; font_size: 11px; vertical_alignment: VerticalAlignment.center; }
                             }
 
                             HorizontalLayout {
                                 spacing: 4px;
                                 CheckBox { checked <=> root.export_fail; }
-                                Text { text: "Fail"; color: white; font_size: 11px; vertical_alignment: center; }
+                                Text { text: "Fail"; color: white; font_size: 11px; vertical_alignment: VerticalAlignment.center; }
                             }
 
                             HorizontalLayout {
                                 spacing: 4px;
                                 CheckBox { checked <=> root.export_fail_percent; }
-                                Text { text: "Fail%"; color: white; font_size: 11px; vertical_alignment: center; }
+                                Text { text: "Fail%"; color: white; font_size: 11px; vertical_alignment: VerticalAlignment.center; }
                             }
                         }
 
@@ -1015,31 +996,31 @@ export component MainWindow {
                             HorizontalLayout {
                                 spacing: 4px;
                                 CheckBox { checked <=> root.export_total; }
-                                Text { text: "Total"; color: white; font_size: 11px; vertical_alignment: center; }
+                                Text { text: "Total"; color: white; font_size: 11px; vertical_alignment: VerticalAlignment.center; }
                             }
 
                             HorizontalLayout {
                                 spacing: 4px;
                                 CheckBox { checked <=> root.export_rtt; }
-                                Text { text: "RTT"; color: white; font_size: 11px; vertical_alignment: center; }
+                                Text { text: "RTT"; color: white; font_size: 11px; vertical_alignment: VerticalAlignment.center; }
                             }
 
                             HorizontalLayout {
                                 spacing: 4px;
                                 CheckBox { checked <=> root.export_max; }
-                                Text { text: "Max"; color: white; font_size: 11px; vertical_alignment: center; }
+                                Text { text: "Max"; color: white; font_size: 11px; vertical_alignment: VerticalAlignment.center; }
                             }
 
                             HorizontalLayout {
                                 spacing: 4px;
                                 CheckBox { checked <=> root.export_min; }
-                                Text { text: "Min"; color: white; font_size: 11px; vertical_alignment: center; }
+                                Text { text: "Min"; color: white; font_size: 11px; vertical_alignment: VerticalAlignment.center; }
                             }
 
                             HorizontalLayout {
                                 spacing: 4px;
                                 CheckBox { checked <=> root.export_avg; }
-                                Text { text: "Avg"; color: white; font_size: 11px; vertical_alignment: center; }
+                                Text { text: "Avg"; color: white; font_size: 11px; vertical_alignment: VerticalAlignment.center; }
                             }
                         }
                     }
@@ -1055,15 +1036,14 @@ export component MainWindow {
                         background: root.success;
                         width: 80px;
                         height: 32px;
-                        cursor: MouseCursor.pointer;
 
                         Text {
                             text: "Save";
                             color: white;
                             font_size: 13px;
                             font_weight: 700;
-                            horizontal_alignment: center;
-                            vertical_alignment: center;
+                            horizontal_alignment: HorizontalAlignment.center;
+                            vertical_alignment: VerticalAlignment.center;
                         }
 
                         TouchArea {
@@ -1079,14 +1059,13 @@ export component MainWindow {
                         background: root.text_dim;
                         width: 80px;
                         height: 32px;
-                        cursor: MouseCursor.pointer;
 
                         Text {
                             text: "Reset";
                             color: white;
                             font_size: 13px;
-                            horizontal_alignment: center;
-                            vertical_alignment: center;
+                            horizontal_alignment: HorizontalAlignment.center;
+                            vertical_alignment: VerticalAlignment.center;
                         }
 
                         TouchArea {
@@ -1103,15 +1082,14 @@ export component MainWindow {
                         background: root.fail;
                         width: 80px;
                         height: 32px;
-                        cursor: MouseCursor.pointer;
 
                         Text {
                             text: "Close";
                             color: white;
                             font_size: 13px;
                             font_weight: 700;
-                            horizontal_alignment: center;
-                            vertical_alignment: center;
+                            horizontal_alignment: HorizontalAlignment.center;
+                            vertical_alignment: VerticalAlignment.center;
                         }
 
                         TouchArea {
@@ -1151,7 +1129,7 @@ export component MainWindow {
                     color: root.warning;
                     font_size: 18px;
                     font_weight: 700;
-                    horizontal_alignment: center;
+                    horizontal_alignment: HorizontalAlignment.center;
                 }
 
                 // Warning Message
@@ -1159,7 +1137,7 @@ export component MainWindow {
                     text: "You have entered more than 1000 IP addresses. This may cause high memory usage and slow performance. Do you want to continue?";
                     color: white;
                     font_size: 13px;
-                    horizontal_alignment: center;
+                    horizontal_alignment: HorizontalAlignment.center;
                     wrap: TextWrap.wrap;
                 }
 
@@ -1173,15 +1151,14 @@ export component MainWindow {
                         background: root.success;
                         width: 100px;
                         height: 32px;
-                        cursor: MouseCursor.pointer;
 
                         Text {
                             text: "Continue";
                             color: white;
                             font_size: 13px;
                             font_weight: 700;
-                            horizontal_alignment: center;
-                            vertical_alignment: center;
+                            horizontal_alignment: HorizontalAlignment.center;
+                            vertical_alignment: VerticalAlignment.center;
                         }
 
                         TouchArea {
@@ -1199,15 +1176,14 @@ export component MainWindow {
                         background: root.fail;
                         width: 80px;
                         height: 32px;
-                        cursor: MouseCursor.pointer;
 
                         Text {
                             text: "Cancel";
                             color: white;
                             font_size: 13px;
                             font_weight: 700;
-                            horizontal_alignment: center;
-                            vertical_alignment: center;
+                            horizontal_alignment: HorizontalAlignment.center;
+                            vertical_alignment: VerticalAlignment.center;
                         }
 
                         TouchArea {
@@ -1248,7 +1224,7 @@ export component MainWindow {
                     color: root.accent;
                     font_size: 24px;
                     font_weight: 700;
-                    horizontal_alignment: center;
+                    horizontal_alignment: HorizontalAlignment.center;
                 }
 
                 // Version
@@ -1256,7 +1232,7 @@ export component MainWindow {
                     text: "Version v1.1.0";
                     color: root.text_dim;
                     font_size: 14px;
-                    horizontal_alignment: center;
+                    horizontal_alignment: HorizontalAlignment.center;
                 }
 
                 // Separator
@@ -1270,7 +1246,7 @@ export component MainWindow {
                     text: "A powerful network ping testing tool with support for single IPs, CIDR notation, concurrent pinging, and detailed statistics.";
                     color: white;
                     font_size: 13px;
-                    horizontal_alignment: center;
+                    horizontal_alignment: HorizontalAlignment.center;
                     wrap: TextWrap.wrap;
                 }
 
@@ -1281,7 +1257,7 @@ export component MainWindow {
                     text: "© 2026 PingTest. All rights reserved.";
                     color: root.text_dim;
                     font_size: 12px;
-                    horizontal_alignment: center;
+                    horizontal_alignment: HorizontalAlignment.center;
                 }
 
                 // Close Button
@@ -1290,16 +1266,15 @@ export component MainWindow {
                     background: root.accent;
                     width: 100px;
                     height: 36px;
-                    cursor: MouseCursor.pointer;
-                    horizontal_alignment: center;
+                    horizontal_alignment: HorizontalAlignment.center;
 
                     Text {
                         text: "Close";
                         color: white;
                         font_size: 14px;
                         font_weight: 700;
-                        horizontal_alignment: center;
-                        vertical_alignment: center;
+                        horizontal_alignment: HorizontalAlignment.center;
+                        vertical_alignment: VerticalAlignment.center;
                     }
 
                     TouchArea {
