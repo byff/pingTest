@@ -101,7 +101,6 @@ export component MainWindow {
         // === TOOLBAR ===
         Rectangle {
             background: root.window_fill;
-            border_bottom: 1px solid root.text_dim;
             height: 48px;
 
             HorizontalLayout {
@@ -363,7 +362,6 @@ export component MainWindow {
                     // Table Header
                     Rectangle {
                         background: #252830;
-                        border_bottom: 1px solid root.text_dim;
                         height: 32px;
 
                         HorizontalLayout {
@@ -586,8 +584,7 @@ export component MainWindow {
                         vertical_stretch: 1;
 
                         for row[i] in root.table_rows: Rectangle {
-                            background: i % 2 == 0 ? root.window_fill : #1E2128;
-                            border_bottom: 1px solid #2A2D35;
+                            background: Math.mod(i, 2) == 0 ? root.window_fill : #1E2128;
                             height: 28px;
 
                             HorizontalLayout {
