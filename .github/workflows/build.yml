@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - target: x86_64-pc-windows-gnu
@@ -67,7 +68,7 @@ jobs:
             ubuntu:20.04 \
             sh -c "
               export DEBIAN_FRONTEND=noninteractive TZ=UTC
-              apt-get update && apt-get install -y curl build-essential gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libgtk-3-0 libfontconfig1-dev
+              apt-get update && apt-get install -y curl build-essential gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libgtk-3-0 libfontconfig1-dev libfontconfig1-dev
               curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --target aarch64-unknown-linux-gnu
               . ~/.cargo/env
               cargo build --release --target aarch64-unknown-linux-gnu
