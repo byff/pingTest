@@ -28,23 +28,23 @@ export component MainWindow {
     property <color> window_fill: #181A26;
 
     // === WINDOW PROPERTIES ===
-    property <string> status_message: "Ready";
-    property <string> input_text: "";
-    property <bool> is_running: false;
-    property <int> selected_ip_count: 0;
+    in-out property <string> status_message: "Ready";
+    in-out property <string> input_text: "";
+    in-out property <bool> is_running: false;
+    in-out property <int> selected_ip_count: 0;
 
     // === TABLE DATA ===
     property <int> sort_column: 0;
     property <bool> sort_descending: false;
 
     // === SETTINGS PROPERTIES ===
-    property <int> timeout_value: 1000;
-    property <int> packet_size_value: 64;
-    property <int> interval_value: 1000;
-    property <int> max_concurrent_value: 100;
-    property <bool> cidr_enabled: true;
-    property <bool> remember_addresses: true;
-    property <bool> debug_mode: false;
+    in-out property <int> timeout_value: 1000;
+    in-out property <int> packet_size_value: 64;
+    in-out property <int> interval_value: 1000;
+    in-out property <int> max_concurrent_value: 100;
+    in-out property <bool> cidr_enabled: true;
+    in-out property <bool> remember_addresses: true;
+    in-out property <bool> debug_mode: false;
 
     // === EXPORT FIELD CHECKBOXES ===
     property <bool> export_hostname: true;
@@ -59,12 +59,12 @@ export component MainWindow {
     property <bool> export_avg: true;
 
     // === DIALOG STATES ===
-    property <bool> settings_dialog_open: false;
-    property <bool> ip_warning_dialog_open: false;
+    in-out property <bool> settings_dialog_open: false;
+    in-out property <bool> ip_warning_dialog_open: false;
     property <bool> about_dialog_open: false;
 
     // === SAMPLE TABLE DATA ===
-    property <[TableRow]> table_rows: [
+    in-out property <[TableRow]> table_rows: [
         { num: 1, hostname: "router.local", ip: "192.168.1.1", success: 10, fail: 0, fail_pct: "0%", total: 10, rtt: "1.5ms", rtt_max: "2.1ms", rtt_min: "1.2ms", rtt_avg: "1.5ms", status: 0 },
         { num: 2, hostname: "server1.local", ip: "192.168.1.10", success: 8, fail: 2, fail_pct: "20%", total: 10, rtt: "5.3ms", rtt_max: "8.2ms", rtt_min: "3.1ms", rtt_avg: "5.1ms", status: 1 },
         { num: 3, hostname: "server2.local", ip: "192.168.1.11", success: 3, fail: 7, fail_pct: "70%", total: 10, rtt: "12.5ms", rtt_max: "25.0ms", rtt_min: "8.0ms", rtt_avg: "14.2ms", status: 2 },

@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use slint::{Timer, TimerMode, Weak, ModelRc, ComponentHandle};
+use slint::{Timer, TimerMode, Weak, ModelRc, VecModel};
 use parking_lot::RwLock;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -13,7 +13,7 @@ use crate::utils;
 use crate::excel;
 
 #[allow(unused_extern_crates)]
-extern crate slint_generated_ui__app as slint_gen;
+use crate::slint_generatedMainWindow as slint_gen;
 
 pub use slint_gen::TableRow;
 
@@ -148,7 +148,7 @@ impl PingTestApp {
         *self.engine.write() = engine;
 
         self.is_running = true;
-        self.update_status(format!("正在 Ping {} 个目标...", self.targets.len()));
+        self.update_status(&format!("正在 Ping {} 个目标...", self.targets.len()));
         self.update_is_running(true);
         self.update_table_rows();
     }
@@ -207,7 +207,7 @@ impl PingTestApp {
                     Ok(content) => {
                         let cleaned = utils::extract_and_clean_ips(&content);
                         self.address_input = if cleaned.is_empty() { content } else { cleaned };
-                        self.update_status(format!("已导入: {}", path.display()));
+                        self.update_status(&format!("已导入: {}", path.display()));
                         self.update_input_text(self.address_input.clone());
                         if self.is_running {
                             self.refresh_ping();
@@ -267,7 +267,7 @@ impl PingTestApp {
         }
         self.address_input = ips.join("\n");
         self.update_input_text(self.address_input.clone());
-        self.update_status(format!("已从Excel导入 {} 个地址", ips.len()));
+        self.update_status(&format!("已从Excel导入 {} 个地址", ips.len()));
     }
 
     pub fn export_results(&mut self) {
@@ -283,7 +283,7 @@ impl PingTestApp {
         match dialog.save_file() {
             Some(path) => {
                 match excel::export_results(&path, &self.targets, &self.config.export) {
-                    Ok(_) => self.update_status(format!("已导出: {}", path.display())),
+                    Ok(_) => self.update_status(&format!("已导出: {}", path.display())),
                     Err(e) => self.show_error("导出失败", &format!("文件: {}\n\n错误: {}", path.display(), e)),
                 }
             }
@@ -324,7 +324,7 @@ impl PingTestApp {
                     ip_col,
                     &self.config.export,
                 ) {
-                    Ok(_) => self.update_status(format!("已插入结果: {}", path.display())),
+                    Ok(_) => self.update_status(&format!("已插入结果: {}", path.display())),
                     Err(e) => self.show_error("插入结果失败", &format!("文件: {}\n\n错误: {}", path.display(), e)),
                 }
             } else {
@@ -451,7 +451,7 @@ impl PingTestApp {
     fn update_table_rows(&self) {
         if let Some(w) = self.window_rc.borrow().as_ref().and_then(|w| w.upgrade()) {
             let rows = self.build_table_rows();
-            w.set_table_rows(ModelRc::new(rows));
+            w.set_table_rows(ModelRc::new(VecModel::from(rows)));
             w.set_selected_ip_count(self.targets.len() as i32);
         }
     }
@@ -506,21 +506,22 @@ impl PingTestApp {
         rows
     }
 
-    fn start_timer(&mut self) {
+    pub fn start_timer(&mut self) {
         let window_rc = self.window_rc.clone();
-        let app_ptr = Arc::new(self as *mut PingTestApp);
+        let app_ptr = Arc::new(RefCell::new(self as *mut PingTestApp));
 
         let timer = Timer::default();
         timer.start(TimerMode::Repeated, Duration::from_millis(500), move || {
-            let app = unsafe { &*app_ptr.as_ref() };
+            let app = unsafe { &mut **app_ptr.borrow() };
             if let Some(w) = window_rc.borrow().as_ref().and_then(|w| w.upgrade()) {
                 let rows = app.build_table_rows();
-                w.set_table_rows(ModelRc::new(rows));
+                w.set_table_rows(ModelRc::new(VecModel::from(rows)));
                 w.set_selected_ip_count(app.targets.len() as i32);
             }
         });
         self.timer = Some(timer);
     }
+}
 
 impl Default for PingTestApp {
     fn default() -> Self {

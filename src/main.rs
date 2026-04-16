@@ -101,7 +101,6 @@ fn main() {
     window.on_ip_warning_cancel(move || {});
 
     {
-        let app_clone = app.clone();
         window.on_close_about(move || {});
     }
 
